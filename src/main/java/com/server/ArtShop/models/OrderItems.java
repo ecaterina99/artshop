@@ -2,10 +2,12 @@ package com.server.ArtShop.models;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Entity(name = "order_items")
 public class OrderItems {
 

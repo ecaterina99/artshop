@@ -3,12 +3,14 @@ package com.server.ArtShop.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Entity(name = "users")
 public class User {
     @Id

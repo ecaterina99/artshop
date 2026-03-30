@@ -9,10 +9,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,14 +48,15 @@ public class OrderController {
     }
 
     @PostMapping
-    @Operation(summary = "Create a new order", description = "Creates an order with CREATED status and totalPrice of 0")
+    @Operation(summary = "Create a new order", description = "Creates an order with items, calculates total price automatically")
     @ApiResponse(responseCode = "201", description = "Order created successfully")
     @ApiResponse(responseCode = "400", description = "Invalid input data",
             content = @Content(schema = @Schema(implementation = ApiError.class)))
-    @ApiResponse(responseCode = "404", description = "User not found",
+    @ApiResponse(responseCode = "404", description = "Painting not found",
             content = @Content(schema = @Schema(implementation = ApiError.class)))
-    public ResponseEntity<OrderDTO> createOrder(@Valid @RequestBody CreateOrderDTO createOrderDTO) {
-        OrderDTO created = orderService.createOrder(createOrderDTO);
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<OrderDTO> createOrder(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody CreateOrderDTO createOrderDTO) {
+        OrderDTO created = orderService.createOrder(createOrderDTO, jwt.getSubject());
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 

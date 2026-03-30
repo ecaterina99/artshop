@@ -1,5 +1,7 @@
 package com.server.ArtShop.Controllers;
 
+import com.server.ArtShop.dto.LoginRequest;
+import com.server.ArtShop.dto.TokenResponse;
 import com.server.ArtShop.dto.UserDTO;
 import com.server.ArtShop.exceptions.ApiError;
 import com.server.ArtShop.models.User;
@@ -69,12 +71,4 @@ public class AuthController {
         String token = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
         return new TokenResponse(token);
     }
-}
-
-record LoginRequest(
-        String email,
-        String password) {
-}
-
-record TokenResponse(String accessToken) {
 }

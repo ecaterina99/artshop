@@ -3,15 +3,9 @@ package com.server.ArtShop.config;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-
-/**
- * defines metadata about API (title, version, description).
- */
 
 @Configuration
 public class OpenApiConfig {
@@ -20,19 +14,16 @@ public class OpenApiConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Space Exploration API")
+                        .title("ArtShop API")
                         .version("1.0")
-                        .description("API for managing astronauts and space missions"))
-                .addSecurityItem(new SecurityRequirement()
-                        .addList("Bearer Authentication"))
+                        .description("API for managing a painting gallery and orders"))
                 .components(new Components()
-                        .addSecuritySchemes("Bearer Authentication",
+                        .addSecuritySchemes("bearerAuth",
                                 new SecurityScheme()
-                                        .name("Bearer Authentication")
+                                        .name("bearerAuth")
                                         .type(SecurityScheme.Type.HTTP)
                                         .scheme("bearer")
                                         .bearerFormat("JWT")
-                                        .in(SecurityScheme.In.HEADER)
                                         .description("Enter JWT Bearer token")));
     }
 }

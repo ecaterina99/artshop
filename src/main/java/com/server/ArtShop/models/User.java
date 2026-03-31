@@ -15,7 +15,7 @@ import java.util.List;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     @NotEmpty(message = "This field can't be empty")
     @Email(message = "Invalid email format")
     @Column(name = "email", nullable = false)

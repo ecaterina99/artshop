@@ -16,7 +16,7 @@ import java.util.List;
 public class Painting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     @NotNull(message = "Name is required")
     private String name;
     private String description;

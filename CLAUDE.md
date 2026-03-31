@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Spring Boot 4.0.5 art e-commerce backend (Java 21) with MySQL, Spring Security, Kafka, and JPA/Hibernate. Uses Lombok for boilerplate reduction. Base package: `com.server.ArtShop`.
+Spring Boot 4.0.5 art e-commerce backend (Java 21) with MySQL, Spring Security, and JPA/Hibernate. Uses Lombok for boilerplate reduction and ModelMapper (strict mode, skip nulls) for entity↔DTO conversion. Base package: `com.server.ArtShop`.
 
 ## Build & Run Commands
 
@@ -23,7 +23,20 @@ Spring Boot 4.0.5 art e-commerce backend (Java 21) with MySQL, Spring Security, 
 
 ## Architecture
 
-The app is an early-stage e-commerce backend. Currently only entity models and a custom exception exist — no controllers, services, or repositories have been created yet.
+### Layers
+
+Standard layered architecture: **Controller → Service → Repository → Entity**. Each domain concept (User, Painting, Order, OrderItems) has its own controller, service, repository, and set of DTOs.
+
+### Package Layout
+
+- `Controllers/` — REST controllers (note: uppercase C, unlike other packages)
+- `services/` — business logic
+- `repositories/` — Spring Data JPA interfaces (all extend `JpaRepository<T, Integer>`)
+- `models/` — JPA entities
+- `dto/` — request/response DTOs with Jakarta validation; follows Create*/Update*/EntityDTO naming
+- `config/` — SecurityConfig, JWTKeyConfig, OpenApiConfig, ModelMapperConfig
+- `exceptions/` — GlobalExceptionHandler (`@RestControllerAdvice`), ApiError response class, UserAlreadyExistsException
+- `util/` — Spring Security `UserDetails` wrapper for User entity
 
 ### Entity Model (all use `GenerationType.IDENTITY`)
 
@@ -34,10 +47,23 @@ The app is an early-stage e-commerce backend. Currently only entity models and a
 
 Both `Order.Status` and `Painting.Style` enums have `fromString()` factory methods for string-to-enum conversion.
 
-### Validation
+### Authentication & Security
 
-Jakarta validation annotations are applied at the entity level (`@NotNull`, `@Email`, `@Size`, `@Min`).
+- JWT-based stateless auth with RSA 2048-bit keys (generated at startup, not persisted)
+- Auth endpoints: `POST /auth/register`, `POST /auth/login` — both public
+- JWT contains `roles` claim; tokens expire in 1 hour
+- Most endpoints are currently `permitAll` in SecurityConfig; only `/users` and unmatched paths require auth
+- CORS configured for `http://localhost:9091`
+- Passwords hashed with BCrypt
 
-### Note
+### API
 
-`application.properties` has a typo: `pring.datasource.url` should be `spring.datasource.url`.
+- All endpoints prefixed with `/api` (server context path)
+- Swagger UI at `/api/swagger-ui/index.html`
+- Error responses use `ApiError` format with error code, message, status, timestamp, and optional fieldErrors map
+
+### Data
+
+- `data.sql` seeds 10 sample paintings on startup (idempotent `INSERT ... WHERE NOT EXISTS`)
+- Hibernate `ddl-auto=update` — schema auto-managed
+- Kafka dependency is included but not yet configured or used

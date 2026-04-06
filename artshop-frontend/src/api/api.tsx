@@ -9,3 +9,12 @@ export const fetchPaintings = async () => {
 
     return response.json();
 };
+
+export const fetchPaintingById= async (id:number) => {
+    const response = await fetch(`${API_URL}/paintings/${id}`);
+    if (!response.ok) {
+        throw new Error("Failed to fetch painting");
+    }
+
+    return response.json();
+}

@@ -5,7 +5,7 @@ export default function Navbar() {
         <>
             <nav className="navbar">
                 <Link to="/" className="link">home</Link>
-                <Link to="/paintings"className="link">paintings</Link>
+                <Link to="/paintings" className="link">paintings</Link>
                 <Link to="/cart" className="link">cart</Link>
             </nav>
         </>

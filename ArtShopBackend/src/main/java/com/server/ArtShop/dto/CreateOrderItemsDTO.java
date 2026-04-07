@@ -12,8 +12,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateOrderItemsDTO {
-    @NotNull(message = "Order ID is required")
-    private Integer orderId;
     @NotNull(message = "Painting ID is required")
     private Integer paintingId;
     @NotNull(message = "Quantity is required")

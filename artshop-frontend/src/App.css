@@ -44,15 +44,14 @@
 }
 
 .painting-img img {
-    width: 230px;
+    width: 500px;
     height: auto;
 }
 
 .painting-card-body {
-    padding: 16px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
     flex: 1;
 }
 
@@ -96,4 +95,16 @@
 .painting-card-link {
     text-decoration: none;
     color: inherit;
+}
+
+.artpiece{
+    justify-content: center;
+    margin: 50px;
+    display: flex;
+}
+
+.painting-title{
+    font-family: "GB18030 Bitmap";
+    font-size: 40px;
+    font-style: italic;
 }

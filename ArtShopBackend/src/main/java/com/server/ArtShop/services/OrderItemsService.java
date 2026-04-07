@@ -48,14 +48,11 @@ public class OrderItemsService {
 
     @Transactional
     public OrderItemsDTO createOrderItem(CreateOrderItemsDTO createDTO) {
-        Order order = orderRepository.findById(createDTO.getOrderId())
-                .orElseThrow(() -> new EntityNotFoundException("Order with id " + createDTO.getOrderId() + " does not exist"));
 
         Painting painting = paintingRepository.findById(createDTO.getPaintingId())
                 .orElseThrow(() -> new EntityNotFoundException("Painting with id " + createDTO.getPaintingId() + " does not exist"));
 
         OrderItems item = new OrderItems();
-        item.setOrder(order);
         item.setPainting(painting);
         item.setQuantity(createDTO.getQuantity());
 

@@ -50,7 +50,7 @@ public class OrderItemsController {
             content = @Content(schema = @Schema(implementation = ApiError.class)))
     @ApiResponse(responseCode = "404", description = "Order or painting not found",
             content = @Content(schema = @Schema(implementation = ApiError.class)))
-    public ResponseEntity<OrderItemsDTO> createOrderItem(@Valid @RequestBody CreateOrderItemsDTO createDTO) {
+    public ResponseEntity<OrderItemsDTO> addToCart(@Valid @RequestBody CreateOrderItemsDTO createDTO) {
         OrderItemsDTO created = orderItemsService.createOrderItem(createDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }

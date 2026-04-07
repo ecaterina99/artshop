@@ -1,13 +1,21 @@
 import {Painting} from "../types/Painting";
 import {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
-import {fetchPaintingById} from "../api/api";
+import {fetchPaintingById, addToCart} from "../api/api";
 
 export default function PaintingDetail() {
     const {id} = useParams<{ id: string }>();
     const [painting, setPainting] = useState<Painting>();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const handleOrder = async () => {
+        try {
+            await addToCart({paintingId: painting!.id, quantity: 1});
+            console.log('order is placed to cart successful')
+        } catch (err) {
+            setError(err.message);
+        }
+    }
 
     useEffect(() => {
         fetchPaintingById(Number(id))
@@ -21,22 +29,29 @@ export default function PaintingDetail() {
     if (!painting) return <p>Painting not found.</p>;
 
     return (
-        <>
+        <div className="artpiece">
             <div className="painting-img">
                 <img src={painting.img} alt={painting.name}/>
             </div>
             <div className="painting-card-body">
-                <h3 className="painting-card-title">{painting.name}</h3>
+                <h3 className="painting-title">{painting.name}</h3>
+
                 <span className="painting-card-style">{painting.style}</span>
                 <p className="painting-card-description">{painting.description}</p>
                 <div className="painting-card-details">
                     <span>{painting.medium}</span>
-                    <span>{painting.high} × {painting.length} cm</span>
+                </div>
+                <div className="painting-card-details">
+
+                <span>{painting.high} × {painting.length} cm</span>
+               <span className="painting-card-price">${painting.price}</span>
+
                 </div>
                 <div className="painting-card-footer">
-                    <span className="painting-card-price">${painting.price}</span>
+                    <button onClick={handleOrder} > ADD TO CART </button>
                 </div>
             </div>
-        </>
+
+        </div>
     )
 }

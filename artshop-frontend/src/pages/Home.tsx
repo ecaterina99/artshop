@@ -2,18 +2,22 @@ import {useAuth} from "react-oidc-context";
 
 
 export default function Home() {
-
     const auth = useAuth();
-    return (
 
-        auth.isAuthenticated ? (
+    return (
+        <div className="home">
+            {auth.isAuthenticated ? (
+                <h1>Welcome back, {auth.user?.profile.name || auth.user?.profile.email}!</h1>
+            ) : (
                 <>
-                    <h1>Hello {useAuth().user.profile.name}</h1>
+                    <h1>Welcome to ArtShop</h1>
+                    <p>Browse our collection of paintings or sign in to start shopping.</p>
+                    <button className="auth-btn" onClick={() => auth.signinRedirect()}>
+                        Sign in
+                    </button>
+
                 </>
-            ) :
-            (<>
-                    <h1>Become a member!</h1>
-                </>
-            )
+            )}
+        </div>
     )
 }

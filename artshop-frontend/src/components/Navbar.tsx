@@ -14,7 +14,7 @@ export default function Navbar(){
             <div className="nav-auth">
                 {auth.isAuthenticated ? (
                     <>
-                        <span className="nav-email">{auth.user?.profile.email}</span>
+                        <Link to="/profile" className="link">{auth.user?.profile.email}</Link>
                         <button className="auth-btn" onClick={() => auth.signoutRedirect()}>Logout</button>
                     </>
                 ) : (

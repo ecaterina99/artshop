@@ -9,6 +9,7 @@ const oidcConfig = {
     redirect_uri: "http://localhost:5175/",
     post_logout_redirect_uri: "http://localhost:5175/",
     scope: "openid profile email",
+    automaticSilentRenew: true,
 };
 
 

@@ -1,11 +1,36 @@
 .navbar {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
     margin: 5px;
+}
+
+.nav-links {
+    display: flex;
 }
 
 .link {
     margin: 10px;
+}
+
+.nav-auth {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-email {
+    font-size: 0.85rem;
+    color: #555;
+}
+
+.auth-btn {
+    padding: 6px 16px;
+    border: 1px solid #333;
+    border-radius: 4px;
+    background: none;
+    cursor: pointer;
+    font-size: 0.85rem;
 }
 
 /* Paintings page */

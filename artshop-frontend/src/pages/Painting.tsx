@@ -2,18 +2,24 @@ import {Painting} from "../types/Painting";
 import {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import {fetchPaintingById, addToCart} from "../api/api";
+import { useAuth } from "react-oidc-context";
 
 export default function PaintingDetail() {
     const {id} = useParams<{ id: string }>();
     const [painting, setPainting] = useState<Painting>();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const handleOrder = async () => {
+    const auth = useAuth();
+    const handleAddToCart = async () => {
+        if(!auth.isAuthenticated) {
+            auth.signinRedirect();
+            return;
+        }
         try {
-            await addToCart({paintingId: painting!.id, quantity: 1});
+            await addToCart({paintingId: painting!.id, quantity: 1}, auth.user?.access_token);
             console.log('order is placed to cart successful')
         } catch (err) {
-            setError(err.message);
+            setError(err instanceof Error ? err.message : "Failed to add to cart");
         }
     }
 
@@ -48,7 +54,7 @@ export default function PaintingDetail() {
 
                 </div>
                 <div className="painting-card-footer">
-                    <button onClick={handleOrder} > ADD TO CART </button>
+                    <button onClick={handleAddToCart} > ADD TO CART </button>
                 </div>
             </div>
 

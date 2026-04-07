@@ -1,6 +1,5 @@
 package com.server.ArtShop.config;
 
-import com.server.ArtShop.services.UserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -22,6 +22,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Spring Security configuration class for a JWT-based stateless authentication setup
@@ -30,13 +32,6 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    // Injects a custom UserDetailsService that loads users
-    private final UserDetailsService userDetailsService;
-
-    @Autowired
-    public SecurityConfig(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
 
     // MAIN SECURITY CONFIGURATION
     @Bean
@@ -45,10 +40,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/auth/**",
                                 "/paintings/**",
                                 "/orders/**",
                                 "/order-items/**",
@@ -61,23 +54,12 @@ public class SecurityConfig {
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-                .authenticationProvider(authenticationProvider())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt ->
                         jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())
                 ));
         return http.build();
     }
 
-    //  CONVERT JWT CLAIMS INTO SPRING SECURITY AUTHORITIES (ROLES)
-    @Bean
-    public JwtAuthenticationConverter jwtAuthenticationConverter() {
-        JwtGrantedAuthoritiesConverter gac = new JwtGrantedAuthoritiesConverter();
-        gac.setAuthoritiesClaimName("roles");
-        gac.setAuthorityPrefix("ROLE_");
-        JwtAuthenticationConverter conv = new JwtAuthenticationConverter();
-        conv.setJwtGrantedAuthoritiesConverter(gac);
-        return conv;
-    }
 
     // CONFIGURE CORS (Cross-Origin Resource Sharing)
     @Bean
@@ -85,7 +67,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowedOrigins(List.of(
-                "http://localhost:5175/"
+                "http://localhost:5175"
         ));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
@@ -95,21 +77,20 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
+    //  CONVERT JWT CLAIMS INTO SPRING SECURITY AUTHORITIES (ROLES)
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtAuthenticationConverter conv = new JwtAuthenticationConverter();
+        conv.setJwtGrantedAuthoritiesConverter(jwt -> {
+            Map<String, Object> realmAccess = jwt.getClaim("realm_access");
+            if (realmAccess == null) return List.of();
+            List<String> roles = (List<String>) realmAccess.get("roles");
+            return roles.stream()
+                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                    .collect(Collectors.toList());
+        });
+        return conv;
     }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
-
-    @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder());
-        return provider;
-    }
 }

@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,9 +25,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
 
-    public UserController(UserRepository userRepository) {
+    public UserController(UserRepository userRepository, ModelMapper modelMapper) {
         this.userRepository = userRepository;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping
@@ -36,16 +39,15 @@ public class UserController {
             content = @Content(schema = @Schema(implementation = ApiError.class)))
     @ApiResponse(responseCode = "404", description = "User not found",
             content = @Content(schema = @Schema(implementation = ApiError.class)))
-    public UserDTO getCurrentUser(@AuthenticationPrincipal Jwt jwt) {
-        String email = jwt.getSubject();
+    public UserDTO getUser(@AuthenticationPrincipal Jwt jwt) {
+        String email = jwt.getClaim("email");
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
-
-        return new UserDTO(
-                user.getId(),
-                user.getEmail(),
-                null,
-                user.getRole()
-        );
+                .orElseGet(() -> {
+                    User newUser = new User();
+                    newUser.setEmail(email);
+                    newUser.setRole("ROLE_USER");
+                    return userRepository.save(newUser);
+                });
+        return modelMapper.map(user, UserDTO.class);
     }
 }

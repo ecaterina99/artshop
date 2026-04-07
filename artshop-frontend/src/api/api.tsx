@@ -23,12 +23,13 @@ export const fetchPaintingById = async (id: number) => {
 }
 
 
-export const addToCart = async (p: CreateOrderItem) => {
+export const addToCart = async (p: CreateOrderItem, token?:string) => {
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+
     const response = await fetch(`${API_URL}/order-items`, {
                 method: "POST",
-                headers: {
-                    "Content-type": "application/json"
-                },
+                headers,
                 body: JSON.stringify(p)
             }
         );

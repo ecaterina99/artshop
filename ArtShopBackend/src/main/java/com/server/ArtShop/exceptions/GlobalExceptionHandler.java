@@ -24,11 +24,6 @@ public class GlobalExceptionHandler {
         return ApiError.of(HttpStatus.NOT_FOUND, "RESOURCE_NOT_FOUND", e.getMessage());
     }
 
-    @ExceptionHandler(UserAlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ApiError handleUserAlreadyExists(UserAlreadyExistsException e) {
-        return ApiError.of(HttpStatus.CONFLICT, "USER_ALREADY_EXISTS", e.getMessage());
-    }
 
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -40,12 +35,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleIllegalState(IllegalStateException e) {
         ApiError error = ApiError.of(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-    }
-
-    @ExceptionHandler(BadCredentialsException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ApiError handleBadCredentials(BadCredentialsException e) {
-        return ApiError.of(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", "Invalid email or password");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

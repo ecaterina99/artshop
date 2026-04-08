@@ -46,6 +46,13 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
+    public List<OrderDTO> getOrdersByEmail(String email) {
+        return orderRepository.findByUserEmail(email).stream()
+                .map(order -> modelMapper.map(order, OrderDTO.class))
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
     public OrderDTO getOrderById(int id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Order with id " + id + " does not exist"));

@@ -10,6 +10,7 @@ export default function Navbar(){
                 <Link to="/" className="link">home</Link>
                 <Link to="/paintings" className="link">paintings</Link>
                 <Link to="/cart" className="link">cart</Link>
+                <Link to="/orders" className="link">my orders</Link>
             </div>
             <div className="nav-auth">
                 {auth.isAuthenticated ? (

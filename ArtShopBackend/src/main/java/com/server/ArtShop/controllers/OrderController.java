@@ -39,6 +39,14 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getAllOrders());
     }
 
+    @GetMapping("/my")
+    @Operation(summary = "Get current user's orders")
+    @ApiResponse(responseCode = "200", description = "Orders retrieved successfully")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<List<OrderDTO>> getMyOrders(@AuthenticationPrincipal Jwt jwt) {
+        return ResponseEntity.ok(orderService.getOrdersByEmail(jwt.getClaimAsString("email")));
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Get order by ID")
     @ApiResponse(responseCode = "200", description = "Order found")

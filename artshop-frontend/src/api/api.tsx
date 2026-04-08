@@ -14,6 +14,7 @@ export const fetchPaintings = async () => {
     return response.json();
 };
 
+
 export const fetchPaintingById = async (id: number) => {
     const response = await fetch(`${API_URL}/paintings/${id}`);
     if (!response.ok) {
@@ -82,3 +83,11 @@ export const checkout = async (token?: string): Promise<Order> => {
     if (!response.ok) throw new Error("Failed to checkout");
     return response.json();
 };
+
+export const fetchMyOrders = async (token?: string):Promise<Order[]> =>{
+    const response = await fetch(`${API_URL}/orders/my`, {
+        headers: authHeaders(token)
+    });
+    if(!response.ok) throw new Error("Failed to fetch my orders");
+        return response.json();
+}

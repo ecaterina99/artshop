@@ -1,6 +1,7 @@
 import Navbar from "./components/Navbar";
 import {Routes, Route} from 'react-router-dom'
 import Home from "./pages/Home";
+import Orders from "./pages/Order"
 import PaintingsPage from "./pages/PaintingsPage";
 import Artpiece from "./pages/Painting";
 import Cart from "./pages/Cart";
@@ -22,6 +23,9 @@ export default function App() {
                 }/>
                 <Route path="/profile" element={
                     <ProtectedRoute><Profile/></ProtectedRoute>
+                }/>
+                <Route path="/orders" element={
+                    <ProtectedRoute><Orders/></ProtectedRoute>
                 }/>
             </Routes>
         </>

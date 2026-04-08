@@ -48,21 +48,18 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getOrderById(id));
     }
 
-  /*  @PostMapping
+    @PostMapping
     @Operation(summary = "Create a new order", description = "Creates an order with items, calculates total price automatically")
     @ApiResponse(responseCode = "201", description = "Order created successfully")
     @ApiResponse(responseCode = "400", description = "Invalid input data",
             content = @Content(schema = @Schema(implementation = ApiError.class)))
     @ApiResponse(responseCode = "404", description = "Painting not found",
             content = @Content(schema = @Schema(implementation = ApiError.class)))
- //   @SecurityRequirement(name = "bearerAuth")
- //   public ResponseEntity<OrderDTO> createOrder(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody CreateOrderDTO createOrderDTO) {
-  //      OrderDTO created = orderService.createOrder(createOrderDTO, jwt.getSubject());
-   //     return ResponseEntity.status(HttpStatus.CREATED).body(created);
-  //  }
-
-
-   */
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<OrderDTO> createOrder(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody CreateOrderDTO createOrderDTO) {
+        OrderDTO created = orderService.createOrder(createOrderDTO, jwt.getClaimAsString("email"));
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
 
 
 

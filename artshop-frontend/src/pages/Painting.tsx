@@ -2,7 +2,7 @@ import {Painting} from "../types/Painting";
 import {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import {fetchPaintingById, addToCart} from "../api/api";
-import { useAuth } from "react-oidc-context";
+import {useAuth} from "react-oidc-context";
 
 export default function PaintingDetail() {
     const {id} = useParams<{ id: string }>();

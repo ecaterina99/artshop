@@ -1,9 +1,14 @@
 package com.server.ArtShop.config;
 
+import com.server.ArtShop.dto.CartDTO;
+import com.server.ArtShop.dto.CartItemDTO;
+import com.server.ArtShop.models.Cart;
+import com.server.ArtShop.models.CartItem;
 import org.hibernate.collection.spi.PersistentCollection;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeMap;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,6 +52,28 @@ public class ModelMapperConfig {
         };
 
         mapper.addConverter(hibernateCollectionConverter);
+
+        TypeMap<CartItem, CartItemDTO> cartItemMap = mapper.createTypeMap(CartItem.class, CartItemDTO.class);
+        cartItemMap.addMapping(src -> src.getPainting().getId(), CartItemDTO::setPaintingId);
+        cartItemMap.addMapping(src -> src.getPainting().getName(), CartItemDTO::setPaintingName);
+        cartItemMap.addMapping(src -> src.getPainting().getPrice(), CartItemDTO::setPaintingPrice);
+
+        TypeMap<Cart, CartDTO> cartMap = mapper.createTypeMap(Cart.class, CartDTO.class);
+        cartMap.addMapping(src -> src.getUser().getId(), CartDTO::setUserId);
+        cartMap.addMappings(m -> m.using(ctx -> {
+            Cart cart = (Cart) ctx.getSource();
+            return cart.getCartItems().stream()
+                    .mapToInt(item -> item.getPainting().getPrice() * item.getQuantity())
+                    .sum();
+        }).map(src -> src, CartDTO::setTotalPrice));
+        cartMap.addMappings(m -> m.using(ctx -> {
+            @SuppressWarnings("unchecked")
+            java.util.List<CartItem> items = (java.util.List<CartItem>) ctx.getSource();
+            return items.stream()
+                    .map(item -> mapper.map(item, CartItemDTO.class))
+                    .toList();
+        }).map(Cart::getCartItems, CartDTO::setItems));
+
         return mapper;
     }
 }

@@ -1,11 +1,12 @@
-version: '3.8'
 services:
   keycloak:
     image: quay.io/keycloak/keycloak:26.0
-    command: start-dev
+    command: start-dev --import-realm
     environment:
-      KC_DB: dev-mem           # in-memory DB for learning (use MySQL/Postgres in prod)
+      KC_DB: dev-mem
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
     ports:
       - "8080:8080"
+    volumes:
+      - ./artshop-realm.json:/opt/keycloak/data/import/artshop-realm.json

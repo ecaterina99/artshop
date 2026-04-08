@@ -1,6 +1,5 @@
 package com.server.ArtShop.controllers;
 
-import com.server.ArtShop.dto.CreateOrderItemsDTO;
 import com.server.ArtShop.dto.OrderItemsDTO;
 import com.server.ArtShop.dto.UpdateOrderItemsDTO;
 import com.server.ArtShop.exceptions.ApiError;
@@ -11,7 +10,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,18 +39,6 @@ public class OrderItemsController {
             content = @Content(schema = @Schema(implementation = ApiError.class)))
     public ResponseEntity<OrderItemsDTO> getOrderItemById(@PathVariable int id) {
         return ResponseEntity.ok(orderItemsService.getOrderItemById(id));
-    }
-
-    @PostMapping
-    @Operation(summary = "Create a new order item", description = "Adds a painting to an order with specified quantity")
-    @ApiResponse(responseCode = "201", description = "Order item created successfully")
-    @ApiResponse(responseCode = "400", description = "Invalid input data",
-            content = @Content(schema = @Schema(implementation = ApiError.class)))
-    @ApiResponse(responseCode = "404", description = "Order or painting not found",
-            content = @Content(schema = @Schema(implementation = ApiError.class)))
-    public ResponseEntity<OrderItemsDTO> addToCart(@Valid @RequestBody CreateOrderItemsDTO createDTO) {
-        OrderItemsDTO created = orderItemsService.createOrderItem(createDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")

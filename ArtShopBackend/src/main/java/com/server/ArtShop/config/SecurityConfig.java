@@ -52,6 +52,7 @@ public class SecurityConfig {
                                 "/api/orders/**",
                                 "/api/order-items/**"
                         ).permitAll()
+                        .requestMatchers("/cart/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt ->
@@ -67,7 +68,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowedOrigins(List.of(
-                "http://localhost:5175"
+                "http://localhost:5173"
         ));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));

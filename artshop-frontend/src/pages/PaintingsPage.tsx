@@ -15,9 +15,9 @@ export default function PaintingsPage() {
             .finally(() => setLoading(false));
     }, []);
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error: {error}</p>;
-    if (paintings.length === 0) return <p>No paintings found.</p>;
+    if (loading) return <p className="loading">Loading...</p>;
+    if (error) return <p className="error">{error}</p>;
+    if (paintings.length === 0) return <div className="empty-state"><h2>No paintings found</h2></div>;
 
     return (
         <div>

@@ -3,10 +3,14 @@ services:
     image: quay.io/keycloak/keycloak:26.0
     command: start-dev --import-realm
     environment:
-      KC_DB: dev-mem
+      KC_DB: dev-file
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
     ports:
       - "8080:8080"
     volumes:
       - ./artshop-realm.json:/opt/keycloak/data/import/artshop-realm.json
+      - keycloak-data:/opt/keycloak/data
+
+volumes:
+  keycloak-data:

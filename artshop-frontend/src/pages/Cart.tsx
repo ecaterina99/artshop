@@ -54,22 +54,25 @@ export default function Cart() {
         }
     };
 
-    if (loading) return <p>Loading cart...</p>;
-    if (error) return <p>Error: {error}</p>;
+    if (loading) return <p className="loading">Loading cart...</p>;
+    if (error) return <p className="error">{error}</p>;
 
     if (order) {
         return (
             <div className="cart-page">
                 <h1>Order Placed!</h1>
-                <p>Order #{order.id} — Status: {order.status}</p>
-                <p>Total: ${order.totalPrice.toFixed(2)}</p>
-                <ul>
-                    {order.orderItems.map(item => (
-                        <li key={item.id}>
-                            Painting #{item.paintingId} x{item.quantity}
-                        </li>
-                    ))}
-                </ul>
+                <div className="order-card">
+                    <div className="order-header">
+                        <span className="order-id">Order #{order.id}</span>
+                        <span className="order-status">{order.status}</span>
+                    </div>
+                    <ul className="order-items">
+                        {order.orderItems.map(item => (
+                            <li key={item.id}>Painting #{item.paintingId} × {item.quantity}</li>
+                        ))}
+                    </ul>
+                    <p className="order-total">Total: ${order.totalPrice.toFixed(2)}</p>
+                </div>
             </div>
         );
     }
@@ -78,7 +81,10 @@ export default function Cart() {
         return (
             <div className="cart-page">
                 <h1>Your Cart</h1>
-                <p>Your cart is empty.</p>
+                <div className="empty-state">
+                    <h2>Cart is empty</h2>
+                    <p>Browse paintings and add some to your cart.</p>
+                </div>
             </div>
         );
     }
@@ -101,9 +107,11 @@ export default function Cart() {
                             <td>{item.paintingName}</td>
                             <td>${item.paintingPrice.toFixed(2)}</td>
                             <td>
-                                <button onClick={() => handleQuantityChange(item.id, item.quantity - 1)}>-</button>
-                                <span> {item.quantity} </span>
-                                <button onClick={() => handleQuantityChange(item.id, item.quantity + 1)}>+</button>
+                                <div className="cart-quantity">
+                                    <button className="btn-sm" onClick={() => handleQuantityChange(item.id, item.quantity - 1)}>−</button>
+                                    <span>{item.quantity}</span>
+                                    <button className="btn-sm" onClick={() => handleQuantityChange(item.id, item.quantity + 1)}>+</button>
+                                </div>
                             </td>
                             <td>${(item.paintingPrice * item.quantity).toFixed(2)}</td>
                         </tr>
@@ -111,9 +119,11 @@ export default function Cart() {
                 </tbody>
             </table>
             <div className="cart-summary">
-                <p><strong>Total: ${cart.totalPrice.toFixed(2)}</strong></p>
-                <button onClick={handleClear}>Clear Cart</button>
-                <button onClick={handleCheckout}>Checkout</button>
+                <p>Total: ${cart.totalPrice.toFixed(2)}</p>
+                <div className="cart-actions">
+                    <button className="btn-secondary" onClick={handleClear}>Clear Cart</button>
+                    <button className="btn-primary" onClick={handleCheckout}>Checkout</button>
+                </div>
             </div>
         </div>
     );

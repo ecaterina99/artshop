@@ -10,7 +10,7 @@ Spring Boot 4.0.5 art e-commerce backend (Java 21) with MySQL, Spring Security, 
 
 ```bash
 ./mvnw clean install          # Build and run all tests
-./mvnw spring-boot:run        # Run the application (port 9090, context path /api)
+./mvnw spring-boot:run        # Run the application (port 9091, context path /api)
 ./mvnw test                   # Run all tests
 ./mvnw test -Dtest=ClassName  # Run a single test class
 ./mvnw test -Dtest=ClassName#methodName  # Run a single test method
@@ -25,7 +25,7 @@ Spring Boot 4.0.5 art e-commerce backend (Java 21) with MySQL, Spring Security, 
 
 ### Layers
 
-Standard layered architecture: **Controller → Service → Repository → Entity**. Each domain concept (User, Painting, Order, OrderItems) has its own controller, service, repository, and set of DTOs.
+Standard layered architecture: **Controller → Service → Repository → Entity**. Each domain concept (User, Painting, Order, OrderItems, Cart, CartItem) has its own controller, service, repository, and set of DTOs.
 
 ### Package Layout
 
@@ -44,6 +44,7 @@ Standard layered architecture: **Controller → Service → Repository → Entit
 - **Order** → has many **OrderItems**, tracks status workflow (CREATED → PAID → SHIPPED → DELIVERED)
 - **OrderItems** → junction table linking Order to Painting with quantity
 - **Painting** → product entity with style enum (MODERN, ABSTRACTION, IMPRESSIONIST, MINIMALIST, SURREALIST)
+- **Cart** → user's shopping cart, has many **CartItem**s (links to Painting with quantity)
 
 Both `Order.Status` and `Painting.Style` enums have `fromString()` factory methods for string-to-enum conversion.
 
@@ -53,7 +54,7 @@ Both `Order.Status` and `Painting.Style` enums have `fromString()` factory metho
 - Auth endpoints: `POST /auth/register`, `POST /auth/login` — both public
 - JWT contains `roles` claim; tokens expire in 1 hour
 - Most endpoints are currently `permitAll` in SecurityConfig; only `/users` and unmatched paths require auth
-- CORS configured for `http://localhost:9091`
+- CORS configured for `http://localhost:5173` (frontend origin)
 - Passwords hashed with BCrypt
 
 ### API

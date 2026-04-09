@@ -8,20 +8,22 @@ export default function Profile() {
         <div className="profile">
             <h1>My Profile</h1>
             <div className="profile-info">
-                <p><strong>Name:</strong> {profile?.name || `${profile?.given_name ?? ""} ${profile?.family_name ?? ""}`.trim() || "Not set"}</p>
-                <p><strong>Email:</strong> {profile?.email}</p>
+                <p><strong>Name</strong> {profile?.name || `${profile?.given_name ?? ""} ${profile?.family_name ?? ""}`.trim() || "Not set"}</p>
+                <p><strong>Email</strong> {profile?.email}</p>
             </div>
-            <a
-                className="auth-btn"
-                href="http://localhost:8080/realms/artshop/account"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                Edit Profile
-            </a>
-            <button className="auth-btn" onClick={() => auth.signoutRedirect()}>
-                Logout
-            </button>
+            <div className="profile-actions">
+                <a
+                    className="btn-secondary"
+                    href="http://localhost:8080/realms/artshop/account"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Edit Profile
+                </a>
+                <button className="auth-btn" onClick={() => auth.signoutRedirect()}>
+                    Logout
+                </button>
+            </div>
         </div>
     );
 }

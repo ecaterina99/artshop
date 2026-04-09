@@ -12,10 +12,9 @@ export default function Home() {
                 <>
                     <h1>Welcome to ArtShop</h1>
                     <p>Browse our collection of paintings or sign in to start shopping.</p>
-                    <button className="auth-btn" onClick={() => auth.signinRedirect()}>
+                    <button className="btn-primary" onClick={() => auth.signinRedirect()}>
                         Sign in
                     </button>
-
                 </>
             )}
         </div>

@@ -43,16 +43,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/paintings/**",
-                                "/orders/**",
-                                "/order-items/**",
                                 "/files/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/api/orders/**",
-                                "/api/order-items/**"
+                                "/swagger-ui.html"
                         ).permitAll()
-                        .requestMatchers("/cart/**").authenticated()
+                        .requestMatchers("/cart/**", "/orders/**", "/order-items/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt ->

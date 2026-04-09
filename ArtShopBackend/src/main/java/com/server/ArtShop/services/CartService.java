@@ -35,6 +35,16 @@ public class CartService {
         this.modelMapper = modelMapper;
     }
 
+    private User findOrCreateUser(String email) {
+        return userRepository.findByEmail(email)
+                .orElseGet(() -> {
+                    User newUser = new User();
+                    newUser.setEmail(email);
+                    newUser.setRole("USER");
+                    return userRepository.save(newUser);
+                });
+    }
+
     @Transactional(readOnly = true)
     public CartDTO getCart(String email) {
         return cartRepository.findByUserEmail(email)
@@ -49,8 +59,7 @@ public class CartService {
 
     @Transactional
     public CartDTO addItem(String email, AddToCartDTO dto) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        User user = findOrCreateUser(email);
 
         Cart cart = cartRepository.findByUserEmail(email)
                 .orElseGet(() -> {
@@ -84,12 +93,8 @@ public class CartService {
         Cart cart = cartRepository.findByUserEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Cart not found"));
 
-        CartItem item = cartItemRepository.findById(cartItemId)
-                .orElseThrow(() -> new EntityNotFoundException("Cart item with id " + cartItemId + " does not exist"));
-
-        if (!item.getCart().getId().equals(cart.getId())) {
-            throw new IllegalArgumentException("Cart item does not belong to your cart");
-        }
+        CartItem item = cartItemRepository.findByIdAndCartId(cartItemId, cart.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Cart item with id " + cartItemId + " does not exist in your cart"));
 
         item.setQuantity(dto.getQuantity());
         cartItemRepository.save(item);
@@ -102,12 +107,8 @@ public class CartService {
         Cart cart = cartRepository.findByUserEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Cart not found"));
 
-        CartItem item = cartItemRepository.findById(cartItemId)
-                .orElseThrow(() -> new EntityNotFoundException("Cart item with id " + cartItemId + " does not exist"));
-
-        if (!item.getCart().getId().equals(cart.getId())) {
-            throw new IllegalArgumentException("Cart item does not belong to your cart");
-        }
+        CartItem item = cartItemRepository.findByIdAndCartId(cartItemId, cart.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Cart item with id " + cartItemId + " does not exist in your cart"));
 
         cart.getCartItems().remove(item);
         cartRepository.save(cart);
@@ -140,7 +141,7 @@ public class CartService {
         order.setTotalPrice(0);
         Order savedOrder = orderRepository.save(order);
 
-        int totalPrice = 0;
+        long totalPrice = 0;
         List<OrderItems> orderItems = new ArrayList<>();
 
         for (CartItem cartItem : cart.getCartItems()) {
@@ -150,7 +151,7 @@ public class CartService {
             orderItem.setQuantity(cartItem.getQuantity());
             orderItems.add(orderItem);
 
-            totalPrice += cartItem.getPainting().getPrice() * cartItem.getQuantity();
+            totalPrice += (long) cartItem.getPainting().getPrice() * cartItem.getQuantity();
         }
 
         orderItemsRepository.saveAll(orderItems);

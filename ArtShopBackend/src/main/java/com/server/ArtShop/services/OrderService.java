@@ -70,7 +70,7 @@ public class OrderService {
         order.setTotalPrice(0);
         Order savedOrder = orderRepository.save(order);
 
-        int totalPrice = 0;
+        long totalPrice = 0;
         List<OrderItems> items = new ArrayList<>();
 
         for (CreateOrderDTO.OrderItemRequest itemRequest : createOrderDTO.getItems()) {
@@ -83,7 +83,7 @@ public class OrderService {
             orderItem.setQuantity(itemRequest.getQuantity());
             items.add(orderItem);
 
-            totalPrice += painting.getPrice() * itemRequest.getQuantity();
+            totalPrice += (long) painting.getPrice() * itemRequest.getQuantity();
         }
 
         orderItemsRepository.saveAll(items);

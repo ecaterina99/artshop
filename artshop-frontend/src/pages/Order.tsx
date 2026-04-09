@@ -13,6 +13,7 @@ export default function MyOrders() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (!token) return;
         fetchMyOrders(token)
             .then(setOrders)
             .catch(err => setError(err.message))

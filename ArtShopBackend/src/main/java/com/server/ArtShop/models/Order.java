@@ -21,7 +21,7 @@ public class Order {
     private User user;
 
     @Column(name = "total_price", nullable = false)
-    private int totalPrice;
+    private long totalPrice;
 
     @OneToMany(mappedBy = "order")
     private List<OrderItems> orderItems;

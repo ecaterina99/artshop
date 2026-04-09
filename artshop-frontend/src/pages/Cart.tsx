@@ -14,6 +14,7 @@ export default function Cart() {
     const [order, setOrder] = useState<Order | null>(null);
 
     useEffect(() => {
+        if (!token) return;
         getCart(token)
             .then(setCart)
             .catch(err => setError(err.message))

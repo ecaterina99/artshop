@@ -1,29 +1,18 @@
 import {fetchMyOrders} from "../api/api";
 import {useAuth} from "react-oidc-context";
-import { Order } from "../types/Order";
-import {useEffect, useState} from "react";
+import {useApi} from "../hooks/useApi";
 
 export default function MyOrders() {
 
     const auth = useAuth();
     const token = auth.user?.access_token;
 
-    const [orders, setOrders] = useState<Order[]>([]);
-    const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        if (!token) return;
-        fetchMyOrders(token)
-            .then(setOrders)
-            .catch(err => setError(err.message))
-            .finally(() => setLoading(false));
-    }, [token]);
+    const{data: orders, error, loading} = useApi(()=>fetchMyOrders(token!),[token])
 
     if (loading) return <p className="loading">Loading orders...</p>;
     if (error) return <p className="error">{error}</p>;
 
-    if (orders.length === 0) {
+    if (!orders || orders.length === 0) {
         return (
             <div className="orders-page">
                 <h1>My Orders</h1>

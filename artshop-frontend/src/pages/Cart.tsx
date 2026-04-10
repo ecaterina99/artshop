@@ -1,25 +1,15 @@
-import { useEffect, useState } from "react";
-import { useAuth } from "react-oidc-context";
-import { Cart as CartType } from "../types/Cart";
-import { Order } from "../types/Order";
-import { getCart, updateCartItem, removeCartItem, clearCart, checkout } from "../api/api";
+import {useState} from "react";
+import {useAuth} from "react-oidc-context";
+import {Order} from "../types/Order";
+import {getCart, updateCartItem, removeCartItem, clearCart, checkout} from "../api/api";
+import {useApi} from "../hooks/useApi";
 
 export default function Cart() {
     const auth = useAuth();
     const token = auth.user?.access_token;
-
-    const [cart, setCart] = useState<CartType | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const [order, setOrder] = useState<Order | null>(null);
 
-    useEffect(() => {
-        if (!token) return;
-        getCart(token)
-            .then(setCart)
-            .catch(err => setError(err.message))
-            .finally(() => setLoading(false));
-    }, [token]);
+    const {data: cart, loading, error, setData: setCart, setError} = useApi(() => getCart(token!), [token])
 
     const handleQuantityChange = async (itemId: number, newQuantity: number) => {
         try {
@@ -27,7 +17,7 @@ export default function Cart() {
                 const updated = await removeCartItem(itemId, token);
                 setCart(updated);
             } else {
-                const updated = await updateCartItem(itemId, { quantity: newQuantity }, token);
+                const updated = await updateCartItem(itemId, {quantity: newQuantity}, token);
                 setCart(updated);
             }
         } catch (err) {
@@ -94,28 +84,32 @@ export default function Cart() {
             <h1>Your Cart</h1>
             <table className="cart-table">
                 <thead>
-                    <tr>
-                        <th>Painting</th>
-                        <th>Price</th>
-                        <th>Quantity</th>
-                        <th>Subtotal</th>
-                    </tr>
+                <tr>
+                    <th>Painting</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Subtotal</th>
+                </tr>
                 </thead>
                 <tbody>
-                    {cart.items.map(item => (
-                        <tr key={item.id}>
-                            <td>{item.paintingName}</td>
-                            <td>${item.paintingPrice.toFixed(2)}</td>
-                            <td>
-                                <div className="cart-quantity">
-                                    <button className="btn-sm" onClick={() => handleQuantityChange(item.id, item.quantity - 1)}>−</button>
-                                    <span>{item.quantity}</span>
-                                    <button className="btn-sm" onClick={() => handleQuantityChange(item.id, item.quantity + 1)}>+</button>
-                                </div>
-                            </td>
-                            <td>${(item.paintingPrice * item.quantity).toFixed(2)}</td>
-                        </tr>
-                    ))}
+                {cart.items.map(item => (
+                    <tr key={item.id}>
+                        <td>{item.paintingName}</td>
+                        <td>${item.paintingPrice.toFixed(2)}</td>
+                        <td>
+                            <div className="cart-quantity">
+                                <button className="btn-sm"
+                                        onClick={() => handleQuantityChange(item.id, item.quantity - 1)}>−
+                                </button>
+                                <span>{item.quantity}</span>
+                                <button className="btn-sm"
+                                        onClick={() => handleQuantityChange(item.id, item.quantity + 1)}>+
+                                </button>
+                            </div>
+                        </td>
+                        <td>${(item.paintingPrice * item.quantity).toFixed(2)}</td>
+                    </tr>
+                ))}
                 </tbody>
             </table>
             <div className="cart-summary">

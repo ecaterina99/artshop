@@ -1,16 +1,15 @@
-import {Painting} from "../types/Painting";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {useParams} from "react-router-dom";
 import {fetchPaintingById, addToCart} from "../api/api";
 import {useAuth} from "react-oidc-context";
+import {useApi} from "../hooks/useApi";
 
 export default function PaintingDetail() {
     const {id} = useParams<{ id: string }>();
-    const [painting, setPainting] = useState<Painting>();
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const [added, setAdded] = useState(false);
     const auth = useAuth();
+
+    const{data: painting, error, loading, setError} = useApi(()=>fetchPaintingById(Number(id)),[id])
 
     const handleAddToCart = async () => {
         if(!auth.isAuthenticated) {
@@ -25,13 +24,6 @@ export default function PaintingDetail() {
             setError(err instanceof Error ? err.message : "Failed to add to cart");
         }
     }
-
-    useEffect(() => {
-        fetchPaintingById(Number(id))
-            .then(data => setPainting(data))
-            .catch(err => setError(err.message))
-            .finally(() => setLoading(false));
-    }, [id]);
 
     if (loading) return <p className="loading">Loading...</p>;
     if (error) return <p className="error">{error}</p>;

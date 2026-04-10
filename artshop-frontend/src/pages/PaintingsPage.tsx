@@ -1,23 +1,13 @@
-import {useEffect, useState} from "react";
 import {fetchPaintings} from "../api/api";
-import {Painting} from "../types/Painting"
 import {Link} from "react-router-dom";
+import {useApi} from "../hooks/useApi";
 
 export default function PaintingsPage() {
-    const [paintings, setPaintings] = useState<Painting[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        fetchPaintings()
-            .then(data => setPaintings(data))
-            .catch(err => setError(err.message))
-            .finally(() => setLoading(false));
-    }, []);
+    const {data: paintings, loading, error} = useApi(fetchPaintings);
 
     if (loading) return <p className="loading">Loading...</p>;
     if (error) return <p className="error">{error}</p>;
-    if (paintings.length === 0) return <div className="empty-state"><h2>No paintings found</h2></div>;
+    if (!paintings || paintings.length === 0) return <div className="empty-state"><h2>No paintings found</h2></div>;
 
     return (
         <div>

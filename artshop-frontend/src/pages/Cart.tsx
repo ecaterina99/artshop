@@ -1,46 +1,46 @@
 import {useState} from "react";
 import {useAuth} from "react-oidc-context";
 import {Order} from "../types/Order";
-import {getCart, updateCartItem, removeCartItem, clearCart, checkout} from "../api/api";
-import {useApi} from "../hooks/useApi";
+import {checkout} from "../api/api";
+import {useAppDispatch, useAppSelector} from "../store/hooks";
+import {updateItem, removeItem, clearCartItems, resetCart} from "../store/cartSlice";
 
 export default function Cart() {
     const auth = useAuth();
     const token = auth.user?.access_token;
+
+    // Before: const {data: cart, loading, error} = useApi(() => getCart(token!), [token])
+    // Now:    read directly from Redux store — same data the Navbar sees
+    const {cart, loading, error} = useAppSelector(state => state.cart);
+    const dispatch = useAppDispatch();
+
+    // order stays as local state — only this page needs it (not shared)
     const [order, setOrder] = useState<Order | null>(null);
 
-    const {data: cart, loading, error, setData: setCart, setError} = useApi(() => getCart(token!), [token])
-
     const handleQuantityChange = async (itemId: number, newQuantity: number) => {
-        try {
-            if (newQuantity <= 0) {
-                const updated = await removeCartItem(itemId, token);
-                setCart(updated);
-            } else {
-                const updated = await updateCartItem(itemId, {quantity: newQuantity}, token);
-                setCart(updated);
-            }
-        } catch (err) {
-            setError(err instanceof Error ? err.message : "Failed to update item");
+        if (!token) return;
+        // Before: const updated = await removeCartItem(itemId, token); setCart(updated);
+        // Now:    dispatch the thunk — store updates automatically, Navbar updates too
+        if (newQuantity <= 0) {
+            dispatch(removeItem({itemId, token}));
+        } else {
+            dispatch(updateItem({itemId, quantity: newQuantity, token}));
         }
     };
 
     const handleClear = async () => {
-        try {
-            await clearCart(token);
-            setCart(null);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : "Failed to clear cart");
-        }
+        if (!token) return;
+        dispatch(clearCartItems(token));
     };
 
     const handleCheckout = async () => {
+        if (!token) return;
         try {
             const result = await checkout(token);
             setOrder(result);
-            setCart(null);
+            dispatch(resetCart());  // sync action — clears cart in store instantly
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Checkout failed");
+            // checkout is not in Redux because the Order result is only used here
         }
     };
 

@@ -2,6 +2,8 @@ import App from "./App";
 import {createRoot} from "react-dom/client"
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "react-oidc-context";
+import { Provider } from "react-redux";
+import { store } from "./store/store";
 
 const oidcConfig = {
     authority: "http://localhost:8080/realms/artshop",
@@ -15,9 +17,11 @@ const oidcConfig = {
 
 const root = createRoot(document.getElementById("root"))
 root.render(
-    <AuthProvider {...oidcConfig}>
-    <BrowserRouter>
-        <App />
-    </BrowserRouter>
-    </AuthProvider>
+    <Provider store={store}>
+        <AuthProvider {...oidcConfig}>
+            <BrowserRouter>
+                <App />
+            </BrowserRouter>
+        </AuthProvider>
+    </Provider>
 )

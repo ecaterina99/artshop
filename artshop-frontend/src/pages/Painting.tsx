@@ -1,23 +1,33 @@
 import {useState} from "react";
 import {useParams} from "react-router-dom";
-import {fetchPaintingById, addToCart} from "../api/api";
+import {fetchPaintingById} from "../api/api";
 import {useAuth} from "react-oidc-context";
 import {useApi} from "../hooks/useApi";
+import {useAppDispatch} from "../store/hooks";
+import {addItemToCart} from "../store/cartSlice";
 
 export default function PaintingDetail() {
     const {id} = useParams<{ id: string }>();
     const [added, setAdded] = useState(false);
     const auth = useAuth();
+    const dispatch = useAppDispatch();
 
-    const{data: painting, error, loading, setError} = useApi(()=>fetchPaintingById(Number(id)),[id])
+    // useApi still used here — painting data is NOT shared, only this page needs it
+    const {data: painting, error, loading, setError} = useApi(() => fetchPaintingById(Number(id)), [id])
 
     const handleAddToCart = async () => {
-        if(!auth.isAuthenticated) {
+        if (!auth.isAuthenticated) {
             auth.signinRedirect();
             return;
         }
         try {
-            await addToCart({paintingId: painting!.id, quantity: 1}, auth.user?.access_token);
+            // Before: await addToCart({paintingId, quantity}, token)  ← direct API call, only this page knows
+            // Now:    dispatch(addItemToCart(...))                     ← goes through Redux, Navbar updates too!
+            await dispatch(addItemToCart({
+                paintingId: painting!.id,
+                quantity: 1,
+                token: auth.user!.access_token!,
+            })).unwrap();  // .unwrap() throws if the thunk was rejected, so catch block works
             setAdded(true);
             setTimeout(() => setAdded(false), 2000);
         } catch (err) {

@@ -7,6 +7,7 @@ export function useApi<T>(fetcher: () => Promise<T>, deps: unknown[] = []) {
 
     useEffect(() => {
         setLoading(true);
+        setError(null);
         fetcher()
             .then(setData)
             .catch(err => setError(err.message))

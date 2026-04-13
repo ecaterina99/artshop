@@ -2,8 +2,10 @@ package com.server.ArtShop.config;
 
 import com.server.ArtShop.dto.CartDTO;
 import com.server.ArtShop.dto.CartItemDTO;
+import com.server.ArtShop.dto.OrderItemsDTO;
 import com.server.ArtShop.models.Cart;
 import com.server.ArtShop.models.CartItem;
+import com.server.ArtShop.models.OrderItems;
 import org.hibernate.collection.spi.PersistentCollection;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.Converter;
@@ -57,6 +59,10 @@ public class ModelMapperConfig {
         cartItemMap.addMapping(src -> src.getPainting().getId(), CartItemDTO::setPaintingId);
         cartItemMap.addMapping(src -> src.getPainting().getName(), CartItemDTO::setPaintingName);
         cartItemMap.addMapping(src -> src.getPainting().getPrice(), CartItemDTO::setPaintingPrice);
+
+        TypeMap<OrderItems, OrderItemsDTO> orderItemsMap = mapper.createTypeMap(OrderItems.class, OrderItemsDTO.class);
+        orderItemsMap.addMapping(src -> src.getOrder().getId(), OrderItemsDTO::setOrderId);
+        orderItemsMap.addMapping(src -> src.getPainting().getId(), OrderItemsDTO::setPaintingId);
 
         TypeMap<Cart, CartDTO> cartMap = mapper.createTypeMap(Cart.class, CartDTO.class);
         cartMap.addMapping(src -> src.getUser().getId(), CartDTO::setUserId);

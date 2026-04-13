@@ -1,6 +1,7 @@
 import {fetchPaintings} from "../api/api";
 import {Link} from "react-router-dom";
 import {useApi} from "../hooks/useApi";
+import PaintingCard from "../components/PaintingCard";
 
 export default function PaintingsPage() {
     const {data: paintings, loading, error} = useApi(fetchPaintings);
@@ -15,20 +16,7 @@ export default function PaintingsPage() {
             <div className="paintings-grid">
                 {paintings.map(p => (
                     <Link to={`/paintings/${p.id}`} className="painting-card-link" key={p.id}>
-                        <article className="painting-card">
-                            <div className="painting-card-img">
-                                <img src={p.img} alt={p.name}/>
-                            </div>
-                            <div className="painting-card-body">
-                                <h3 className="painting-card-title">{p.name}</h3>
-                                <div className="painting-card-details">
-                                    <span>{p.high} × {p.length} cm</span>
-                                </div>
-                                <div className="painting-card-footer">
-                                    <span className="painting-card-price">${p.price}</span>
-                                </div>
-                            </div>
-                        </article>
+                        <PaintingCard painting={p} />
                     </Link>
                 ))}
             </div>
